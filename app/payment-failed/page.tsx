@@ -21,7 +21,7 @@ function PaymentFailedContent() {
         <h1 className="text-2xl font-bold text-red-600 mb-4">Payment Failed</h1>
         
         <p className="text-gray-600 mb-6">
-          We're sorry, but your payment could not be processed. Please try again.
+          We&apos;re sorry, but your payment could not be processed. Please try again.
         </p>
         
         {reason && (
