@@ -35,7 +35,7 @@ const Footer = () => {
                     Sale
                   </h3>
                   <ul role="list" className="mt-6 space-y-4">
-                    {navigation.sale.map((item) => (
+                    {navigation.sale?.map((item) => (
                       <li key={item.name}>
                         <a
                           href={item.href}
@@ -52,7 +52,7 @@ const Footer = () => {
                     About Us
                   </h3>
                   <ul role="list" className="mt-6 space-y-4">
-                    {navigation.about.map((item) => (
+                    {navigation.about?.map((item) => (
                       <li key={item.name}>
                         <a
                           href={item.href}
@@ -71,7 +71,7 @@ const Footer = () => {
                     Buying
                   </h3>
                   <ul role="list" className="mt-6 space-y-4">
-                    {navigation.buy.map((item) => (
+                    {navigation.buy?.map((item) => (
                       <li key={item.name}>
                         <a
                           href={item.href}
@@ -88,7 +88,7 @@ const Footer = () => {
                     Support
                   </h3>
                   <ul role="list" className="mt-6 space-y-4">
-                    {navigation.help.map((item) => (
+                    {navigation.help?.map((item) => (
                       <li key={item.name}>
                         <a
                           href={item.href}

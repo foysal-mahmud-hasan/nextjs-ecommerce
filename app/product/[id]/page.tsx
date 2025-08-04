@@ -14,7 +14,7 @@ interface ImageItem {
 
 const SingleProductPage = async ({ params }: SingleProductPageProps) => {
 	// sending API request for a single product with a given product slug
-	const product: Product = await fetcher(`/product-details?id=${params?.id}`);
+	const product: Product = await fetcher(`/inventory/product?id=${params?.id}`);
 	const images = product?.gallery;
 
 	if (!product) {

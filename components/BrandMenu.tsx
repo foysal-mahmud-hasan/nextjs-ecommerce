@@ -9,13 +9,13 @@ import CustomButton from "./CustomButton";
 
 const BrandMenu = async () => {
 	const data = await getAllBrands();
-	const baseData = data.slice(0, 10);
+	const baseData = data && Array.isArray(data) ? data.slice(0, 10) : [];
 
 	return (
 		<div className="py-10 bg-blue-500">
 			<Heading title="BROWSE BRANDS" />
 			<div className="max-w-screen-2xl mx-auto py-10 gap-x-5 px-16 max-md:px-10 gap-y-5 grid grid-cols-5 max-lg:grid-cols-3 max-md:grid-cols-2 max-[450px]:grid-cols-1">
-				{baseData.map((item: Brand) => (
+				{baseData?.map((item: Brand) => (
 					<CategoryItem title={item.name} key={item.id} href={`/shop?brandId=${item.id}`}>
 						<Image
 							src={item.imagePath || DEFAULT_FALLBACK_IMAGE}

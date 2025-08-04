@@ -10,7 +10,7 @@
 
 import React from "react";
 import ProductItem from "./ProductItem";
-import { fetcher } from "@/utils/fetcher";
+import { getAllProducts } from "@/app/actions";
 
 interface ProductsProps {
 	slug: any;
@@ -19,29 +19,51 @@ interface ProductsProps {
 const Products = async ({ slug }: ProductsProps) => {
 	// parse query params
 	const params = slug?.searchParams;
-	const inStock = params?.inStock === "true";
-	const outOfStock = params?.outOfStock === "true";
-	const maxPrice = Number(params?.price || 0);
+	const inStock = params?.inStock !== "false"; // Default to true
+	const outOfStock = params?.outOfStock === "true"; // Default to false
+	const maxPrice = Number(params?.price || 50000); // Set a reasonable default
 	const filterBrand = params?.brandId;
 	const filterCategory = params?.categoryId;
 	const sortBy = params?.sort || undefined;
 	const page = Number(params?.page || 1);
 	const perPage = 12;
 
-	// fetch all products (no server-side brand/category filters)
-	const allProducts: Product[] = await fetcher("/product-search");
+	// fetch all products using the proper action
+	const allProducts: Product[] = await getAllProducts();
 
-	// apply local filters
-	let filtered = allProducts.filter((p) => {
-		// availability
-		if (inStock && !outOfStock && p.quantity <= 0) return false;
-		if (!inStock && outOfStock && p.quantity > 0) return false;
-		// price
-		if (maxPrice && p.price > maxPrice) return false;
-		// brand
-		if (filterBrand && p.brandId !== Number(filterBrand)) return false;
-		// category
-		if (filterCategory && p.categoryId !== Number(filterCategory)) return false;
+	// apply local filters - ensure we always have an array
+	const productsArray = Array.isArray(allProducts) ? allProducts : [];
+	
+	// Apply filters
+	let filtered = productsArray.filter((p) => {
+		// availability filter logic
+		const isInStock = p.quantity > 0;
+		const shouldShowInStock = inStock;
+		const shouldShowOutOfStock = outOfStock;
+		
+		// If both checkboxes are checked (or both false), show all products
+		if ((shouldShowInStock && shouldShowOutOfStock) || (!shouldShowInStock && !shouldShowOutOfStock)) {
+			// Show all products
+		} else if (shouldShowInStock && !shouldShowOutOfStock) {
+			// Show only in-stock products
+			if (!isInStock) return false;
+		} else if (!shouldShowInStock && shouldShowOutOfStock) {
+			// Show only out-of-stock products  
+			if (isInStock) return false;
+		}
+		
+		// price - filter if a specific price limit is set
+		const productPrice = p.price || p.sales_price || 0;
+		if (params?.price && productPrice > maxPrice) return false;
+		
+		// brand - use correct property names
+		const productBrandId = p.brandId || p.brand_id;
+		if (filterBrand && filterBrand !== "" && productBrandId !== Number(filterBrand)) return false;
+		
+		// category - use correct property names
+		const productCategoryId = p.categoryId || p.category_id;
+		if (filterCategory && filterCategory !== "" && productCategoryId !== Number(filterCategory)) return false;
+		
 		return true;
 	});
 
@@ -63,8 +85,8 @@ const Products = async ({ slug }: ProductsProps) => {
 	return (
 		<div className="grid grid-cols-3 justify-items-center gap-x-2 gap-y-5 max-[1300px]:grid-cols-3 max-lg:grid-cols-2 max-[500px]:grid-cols-1">
 			{paged.length > 0 ? (
-				paged.map((product) => (
-					<ProductItem key={product.productId} product={product} color="black" />
+				paged?.map((product) => (
+					<ProductItem key={product.id || product.stock_id} product={product} color="black" />
 				))
 			) : (
 				<h3 className="text-3xl mt-5 text-center w-full col-span-full max-[1000px]:text-2xl max-[500px]:text-lg">

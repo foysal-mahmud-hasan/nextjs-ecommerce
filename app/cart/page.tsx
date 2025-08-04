@@ -35,7 +35,7 @@ const CartPage = () => {
 								role="list"
 								className="divide-y divide-gray-200 border-b border-t border-gray-200"
 							>
-								{products.map((product) => (
+								{products?.map((product) => (
 									<li key={product.id} className="flex py-6 sm:py-10">
 										<div className="flex-shrink-0">
 											<Image

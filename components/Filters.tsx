@@ -31,8 +31,8 @@ const Filters = ({
 
 	const [filters, setFilters] = useState<FiltersState>({
 		inStock: true,
-		outOfStock: true,
-		price: 3000,
+		outOfStock: false, // Default to only in-stock products
+		price: 50000, // Set a reasonable default price
 		rating: 0,
 		brandId: "", // '' means ignore
 		categoryId: "",
@@ -42,9 +42,9 @@ const Filters = ({
 	useEffect(() => {
 		const p = searchParams;
 		setFilters({
-			inStock: p.get("inStock") === "true",
-			outOfStock: p.get("outOfStock") === "true",
-			price: Number(p.get("price") || 50000),
+			inStock: p.get("inStock") !== "false", // Default to true if not explicitly false
+			outOfStock: p.get("outOfStock") === "true", // Default to false unless explicitly true
+			price: Number(p.get("price") || 50000), // Set a reasonable default price
 			rating: Number(p.get("rating") || 0),
 			brandId: p.get("brandId") || "",
 			categoryId: p.get("categoryId") || "",
@@ -53,27 +53,24 @@ const Filters = ({
 
 	// fetch product list for brand/category options
 	useEffect(() => {
-		(async () => {
-			const all: Product[] = await fetcher("/product-search");
-			const uniqueBrands = Array.from(
-				new Map(all.map((p) => [p.brandId, p.brand])).entries()
-			).map(([id, name]) => ({ id, name }));
-			const uniqueCats = Array.from(
-				new Map(all.map((p) => [p.categoryId, p.category])).entries()
-			).map(([id, name]) => ({ id, name }));
-		})();
+		// Remove the fetcher call from client-side component
+		// This should be handled differently or removed entirely
+		// since allBrands and allCategories are already passed as props
 	}, []);
 
 	// update URL params
 	useEffect(() => {
 		const params = new URLSearchParams();
-		params.set("inStock", filters.inStock.toString());
-		params.set("outOfStock", filters.outOfStock.toString());
-		params.set("price", filters.price.toString());
+		
+		// Only set non-default values to keep URL clean
+		if (!filters.inStock) params.set("inStock", "false");
+		if (filters.outOfStock) params.set("outOfStock", "true");
+		if (filters.price !== 50000) params.set("price", filters.price.toString());
 		if (filters.brandId) params.set("brandId", filters.brandId);
 		if (filters.categoryId) params.set("categoryId", filters.categoryId);
-		params.set("sort", sortBy);
-		params.set("page", page.toString());
+		if (sortBy && sortBy !== "default") params.set("sort", sortBy);
+		if (page > 1) params.set("page", page.toString());
+		
 		replace(`${pathname}?${params}`);
 	}, [filters, sortBy, page, pathname, replace]);
 
@@ -115,7 +112,7 @@ const Filters = ({
 			<div className="divider" />
 			{/* Availability */}
 			<h4 className="text-xl mb-2">Availability</h4>
-			{["inStock", "outOfStock"].map((key) => (
+			{["inStock", "outOfStock"]?.map((key) => (
 				<div className="form-control" key={key}>
 					<label className="cursor-pointer flex items-center">
 						<input
@@ -136,8 +133,8 @@ const Filters = ({
 			<input
 				type="range"
 				min={0}
-				max={100000}
-				step={10}
+				max={50000}
+				step={100}
 				value={filters.price}
 				onChange={(e) => setFilters((f) => ({ ...f, price: Number(e.target.value) }))}
 				className="range"

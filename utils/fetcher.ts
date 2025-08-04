@@ -11,12 +11,23 @@ export async function fetcher(endpoint: string, options = {}) {
 		throw new Error("No valid session");
 	}
 
+	// header with dynamic session data
+	// const headers = {
+	// 	"Content-Type": "application/json",
+	// 	"X-API-KEY": API_KEY || "",
+	// 	"X-API-VALUE": API_VALUE || "",
+	// 	"X-API-SECRET": session?.activeKey || "",
+	// 	...(options as RequestInit).headers,
+	// };
+
 	const headers = {
+		"Accept": `application/json`,
 		"Content-Type": "application/json",
+		"Access-Control-Allow-Origin": '*',
 		"X-API-KEY": API_KEY || "",
 		"X-API-VALUE": API_VALUE || "",
-		"X-API-SECRET": session?.activeKey || "",
-		...(options as RequestInit).headers,
+		"X-API-SECRET": 1600010771,
+		"X-Api-User" : 14,
 	};
 
 	// =============== add a 30-second timeout to the fetch request ================
@@ -33,10 +44,13 @@ export async function fetcher(endpoint: string, options = {}) {
 	try {
 		const response = await fetch(`${BASE_URL}${endpoint}`, config);
 		clearTimeout(timeout);
+		
 		if (!response.ok) {
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
-		return await response.json();
+		
+		const result = await response.json();
+		return result;
 	} catch (error) {
 		// =============== handle fetch abort error ================
 		if ((error as Error)?.name === 'AbortError') {
@@ -44,5 +58,6 @@ export async function fetcher(endpoint: string, options = {}) {
 			throw new Error('Fetch request timed out');
 		}
 		console.error(`Fetch error: ${(error as Error)?.message}`);
+		throw error; // Re-throw so the caller can handle it
 	}
 }

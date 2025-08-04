@@ -49,7 +49,7 @@ const AdminOrders = () => {
           <tbody>
             {/* row 1 */}
             {orders &&
-              orders.map((order) => (
+              orders?.map((order) => (
                 <tr key={order?.id}>
                   <th>
                     <label>

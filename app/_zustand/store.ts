@@ -37,7 +37,7 @@ export const useProductStore = create<State & Actions>()(
           if (!cartItem) {
             return { products: [...state.products, newProduct] };
           } else {
-            state.products.map((product) => {
+            state.products?.map((product) => {
               if (product.id === cartItem.id) {
                 product.amount += newProduct.amount;
               }
@@ -88,7 +88,7 @@ export const useProductStore = create<State & Actions>()(
           if (!cartItem) {
             return { products: [...state.products] };
           } else {
-            state.products.map((product) => {
+            state.products?.map((product) => {
               if (product.id === cartItem.id) {
                 product.amount = amount;
               }

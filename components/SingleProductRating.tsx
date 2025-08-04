@@ -27,7 +27,7 @@ const SingleProductRating = ({ rating }: { rating: number }) => {
   return (
     <div className="flex text-2xl items-center max-[500px]:justify-center">
       {ratingArray &&
-        ratingArray.map((singleRating) => {
+        ratingArray?.map((singleRating) => {
           return (
             <>
               {singleRating === "full star" ? (

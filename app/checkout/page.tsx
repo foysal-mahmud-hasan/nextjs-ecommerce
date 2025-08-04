@@ -66,7 +66,7 @@ const CheckoutPage = () => {
 		}
 
 		// Create product name for payment
-		const productNames = products.map(p => p.title).join(", ");
+		const productNames = products?.map(p => p.title).join(", ");
 		const productName = productNames.length > 100 ? 
 			productNames.substring(0, 97) + "..." : 
 			productNames;
@@ -142,7 +142,7 @@ const CheckoutPage = () => {
 							role="list"
 							className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
 						>
-							{products.map((product) => (
+							{products?.map((product) => (
 								<li key={product?.id} className="flex items-start space-x-4 py-6">
 									<Image
 										src={
